@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Resize Multiple</title>
+  <meta name="description" content="Allow the user to resize multiple nodes at once by using the ResizeMultipleTool extension." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Copyright 1998-2020 by Northwoods Software Corporation. -->
+
+  <script src="go.js"></script>
+  <script src="ResizeMultipleTool.js"></script>
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+        {
+          resizingTool: new ResizeMultipleTool(),  // defined in ResizeMultipleTool.js
+          "undoManager.isEnabled": true  // enable undo & redo
+        });
+
+      // define a simple Node template
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",  // the Shape will go around the TextBlock
+          { resizable: true },
+          new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+          // save the modified size in the model node data
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+            // Shape.fill is bound to Node.data.color
+            new go.Binding("fill", "color")),
+          $(go.TextBlock,
+            { margin: 8 },  // some room around the text
+            // TextBlock.text is bound to Node.data.key
+            new go.Binding("text", "key"))
+        );
+
+      // but use the default Link template, by not setting Diagram.linkTemplate
+
+      // create the model data that will be represented by Nodes and Links
+      myDiagram.model = new go.GraphLinksModel(
+        [
+          { key: "Yeni təşkilat əlavə et \n Input: \n Təşkilatın adı", color: "orange" },
+          { key: "Təşkilatın silinlməsi \n Input: \n - Təşkilatın adı  \n (Related to Təşkilatın adı", color: "orange" },
+          { key: "Yeni müştəri qeydiyyatı \n Input: \n - Şəkil əlavə edin \n - Ad  \n - Soyad  \n - Atasının adı  \n - Təşkilat \n  (Related to Təşkilatın adı \n - Mobil nömrə  \n - Email  \n - Ümumi məlumat", color: "orange" },
+          { key: "Müştəri siyahısı \n Input: \n - Logo \n - Ad \n (Related to Ad) \n - Soyad  \n (Related to Soyad) \n - Atasının adı \n  (Related to Atasının adı) \n - Mobil nömrə  \n (Related to Mobil nömrə) \n - Təşkilat \n  (Related to Təşkilatın adı) \n  - Email \n  (Related to Email) \n - Ümumi məlumat  \n (Related to Ümumi məlumat)", color: "orange" }
+        ],
+        [
+          { from: "Yeni təşkilat əlavə et \n Input: \n Təşkilatın adı", to: "Təşkilatın silinlməsi \n Input: \n - Təşkilatın adı  \n (Related to Təşkilatın adı" },
+          { from: "Yeni təşkilat əlavə et \n Input: \n Təşkilatın adı", to: "Yeni müştəri qeydiyyatı \n Input: \n - Şəkil əlavə edin \n - Ad  \n - Soyad  \n - Atasının adı  \n - Təşkilat \n  (Related to Təşkilatın adı \n - Mobil nömrə  \n - Email  \n - Ümumi məlumat" },
+          { from: "Yeni müştəri qeydiyyatı \n Input: \n - Şəkil əlavə edin \n - Ad  \n - Soyad  \n - Atasının adı  \n - Təşkilat \n  (Related to Təşkilatın adı \n - Mobil nömrə  \n - Email  \n - Ümumi məlumat", to: "Müştəri siyahısı \n Input: \n - Logo \n - Ad \n (Related to Ad) \n - Soyad  \n (Related to Soyad) \n - Atasının adı \n  (Related to Atasının adı) \n - Mobil nömrə  \n (Related to Mobil nömrə) \n - Təşkilat \n  (Related to Təşkilatın adı) \n  - Email \n  (Related to Email) \n - Ümumi məlumat  \n (Related to Ümumi məlumat)" }
+        ]);
+    }
+
+
+
+
+
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+
+  <div id="myDiagramDiv" style=" width:800px; height:400px"></div>
+  
+</div>
+</body>
+</html>
